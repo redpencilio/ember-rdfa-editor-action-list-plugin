@@ -1,5 +1,5 @@
 {
-  "name": "ember-rdfa-editor-action-list-plugin",
+  "name": "@lblod/ember-rdfa-editor-action-list-plugin",
   "version": "0.0.0",
   "description": "The default blueprint for ember-cli addons.",
   "keywords": [
