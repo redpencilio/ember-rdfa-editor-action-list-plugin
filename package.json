@@ -1,5 +1,5 @@
 {
-  "name": "@lblod/ember-rdfa-editor-action-list-plugin",
+  "name": "@redpencilio/ember-rdfa-editor-action-list-plugin",
   "version": "0.0.0",
   "description": "The default blueprint for ember-cli addons.",
   "keywords": [
@@ -7,7 +7,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/lblod/ember-rdfa-editor-action-list-plugin.git"
+    "url": "git+https://github.com/redpencilio/ember-rdfa-editor-action-list-plugin.git"
   },
   "license": "MIT",
   "author": "redpencil.io",
