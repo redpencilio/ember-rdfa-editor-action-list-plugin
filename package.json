@@ -5,9 +5,12 @@
   "keywords": [
     "ember-addon"
   ],
-  "repository": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lblod/ember-rdfa-editor-action-list-plugin.git"
+  },
   "license": "MIT",
-  "author": "",
+  "author": "redpencil.io",
   "directories": {
     "doc": "doc",
     "test": "tests"
