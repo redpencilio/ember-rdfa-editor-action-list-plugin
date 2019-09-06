@@ -1,3 +1,4 @@
+/* eslint-disable require-yield */
 import { getOwner } from '@ember/application';
 import Service from '@ember/service';
 import EmberObject, { computed } from '@ember/object';
@@ -31,19 +32,17 @@ const RdfaEditorActionListPlugin = Service.extend({
    * @public
    */
   execute: task(function * (hrId, contexts, hintsRegistry, editor) {
-    if (contexts.length === 0) return [];
-
     const hints = [];
-    contexts.forEach((context) => {
-      let relevantContext = this.detectRelevantContext(context)
-      if (relevantContext) {
-        hintsRegistry.removeHintsInRegion(context.region, hrId, this.get('who'));
-        hints.pushObjects(this.generateHintsForContext(context));
-      }
-    });
-    const cards = hints.map( (hint) => this.generateCard(hrId, hintsRegistry, editor, hint));
-    if(cards.length > 0){
-      hintsRegistry.addHints(hrId, this.get('who'), cards);
+    contexts
+      .filter (this.detectRelevantContext)
+      .forEach (context => {
+          hintsRegistry.removeHintsInRegion(context.region, hrId, this.get('who'));
+          hints.pushObjects(this.generateHintsForContext(context));
+      });
+
+    const cards = hints.map (hint => this.generateCard(hrId, hintsRegistry, editor, hint));
+    if (cards.length > 0) {
+      hintsRegistry.addHints (hrId, this.get('who'), cards);
     }
   }),
 
@@ -59,7 +58,9 @@ const RdfaEditorActionListPlugin = Service.extend({
    * @private
    */
   detectRelevantContext(context){
-    return context.text.toLowerCase().indexOf('hello') >= 0;
+    const lastTriple = context.context.slice(-1)[0];
+    return lastTriple.predicate === 'a' &&
+           lastTriple.object === 'http://data.notable.redpencil.io/#ActionList';
   },
 
 
