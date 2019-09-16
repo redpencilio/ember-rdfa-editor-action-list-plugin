@@ -2,7 +2,7 @@
   <div class="grid">
     <div class="col--10-12">
       <p class="u-spacer--tiny">
-        Bewerk de deelnemerslijst
+        Bewerk de actielijst
       </p>
     </div>
     {{!--       <div class="col--2-12 u-align-right">
@@ -14,54 +14,39 @@
 </div>
 
 <div class="modal-dialog__content">
-  <button {{action (mut isAdding) false}}
-    class="px-3 py-1 font-bold {{if isAdding "text-gray-300 hover:text-teal-500" "bg-gray-300 text-black rounded-tr rounded-tl"}}">
+  <button {{action "setStatus" "isEditing"}}
+    class="px-3 py-1 font-bold {{if status.isEditing "bg-gray-300 text-black rounded-tr rounded-tl" "text-gray-300 hover:text-teal-500"}}">
     Bewerk
   </button>
-  <button {{action (mut isAdding) true}}
-    class="px-3 py-1 font-bold {{if isAdding "bg-gray-300 text-black rounded-tr rounded-tl" "text-gray-300 hover:text-teal-500"}}">
-    Voeg
+  <button {{action "setStatus" "isSelecting"}}
+    class="px-3 py-1 font-bold {{if status.isSelecting "bg-gray-300 text-black rounded-tr rounded-tl" "text-gray-300 hover:text-teal-500"}}">
+    Selecteer
+  </button>
+  <button {{action "setStatus" "isCreating"}}
+    class="px-3 py-1 font-bold {{if status.isCreating "bg-gray-300 text-black rounded-tr rounded-tl" "text-gray-300 hover:text-teal-500"}}">
+    Creer
   </button>
   <div class="bg-gray-300 p-2 text-black">
-    {{#if isAdding}}
+    {{#if status.isEditing}}
+      {{!-- List of current actions --}}
+      <ul class="w-full">
+        {{#each selectedActions as |actionItem|}}
+          <li class="link-list__item flex items-center hover:bg-gray-400 flex mb-1">
+            <div class="flex-1 flex flex-col p-1">
+              <dt class="font-bold">{{actionItem.owner.firstname}} {{actionItem.owner.lastname}}</dt>
+              <dd class="italic">{{actionItem.description}}</dd>
+            </div>
+            <button {{action "deselectAction" actionItem}}
+                class="px-3 py-1 hover:bg-teal-600 hover:text-white rounded">
+              <i class="trash icon pl-1"></i>
+            </button>
+          </li>
+        {{/each}}
+      </ul>
+    {{/if}}
 
+    {{#if status.isCreating}}
       <div class="flex p-3 mb-1 bg-gray-100 rounded-tr-lg rounded-tl-lg">
-        {{#if isCreatingMembership}}
-
-          {{!-- Person selection menu --}}
-          <select onchange={{action "setPerson"}}
-                  class="flex-1 mr-1 bg-gray-700 text-white">
-            <option disabled selected value> -- Kiez iemand -- </option>
-            {{#each people as |person|}}
-              <option value={{person.id}}>{{person.firstname}} {{person.lastname}}</option>
-            {{/each}}
-          </select>
-
-          {{!-- Role selection menu --}}
-          <select onchange={{action "setRole"}}
-                  class="flex-1 ml-1 bg-gray-700 text-white">
-            <option disabled selected value> -- Kiez een rol -- </option>
-            {{#each roles as |role|}}
-              <option value={{role.id}}>{{role.label}}</option>
-            {{/each}}
-          </select>
-
-          <button {{action "createMembership"}}
-            class="ml-2 p-1  border-2 border-gray-800 rounded
-                   bg-white hover:bg-gray-800
-                   text-gray-800 hover:text-white">
-            <i class="check icon"></i>
-          </button>
-
-          <button {{action (mut isCreatingMembership) false}}
-            class="ml-2 p-1  border-2 border-gray-800 rounded
-                   bg-white hover:bg-gray-800
-                   text-gray-800 hover:text-white">
-            <i class="close icon"></i>
-          </button>
-
-      {{else}}
-
         {{!-- Action owner selection menu --}}
         <select onchange={{action "setOwner"}}
                 class="flex-1 ml-1 bg-gray-700 text-white">
@@ -73,43 +58,42 @@
 
         <button {{action (mut isCreatingMembership) true}}
           class="ml-2 p-1  border-2 border-gray-800 rounded
-                 bg-white hover:bg-gray-800
-                 text-gray-800 hover:text-white"><i class="plus icon"></i>
+                bg-white hover:bg-gray-800
+                text-gray-800 hover:text-white"><i class="plus icon"></i>
         </button>
-
-      {{/if}}
-    </div>
-
+      </div>
       <Textarea @value={{actionItemDescription}}
-                placeholder="Enter some description"
+                placeholder="Voer beschrijving over de actie in"
                 class="w-full h-64 p-2 mb-2 bg-gray-100"/>
 
-      <button {{action "addActionItem"}}
+      <button {{action "createAction"}}
         class="p-1 border-2 border-gray-800 bg-white text-gray-800 hover:bg-gray-800 hover:text-white rounded">
         <i class="plus icon"></i> Voeg toe
       </button>
-    {{else}}
+    {{/if}}
 
+    {{#if status.isSelecting}}
       {{!-- List of current actions --}}
       <ul class="w-full">
-        {{#each actionItems as |actionItem|}}
-          <li class="link-list__item flex items-center hover:bg-gray-400 flex mb-1">
+        {{#each nonSelectedActions as |actionItem|}}
+          <li class="link-list__item flex items-center hover:bg-gray-400 flex mb-1" {{action "selectAction" actionItem}}>
             <div class="flex-1 flex flex-col p-1">
               <dt class="font-bold">{{actionItem.owner.firstname}} {{actionItem.owner.lastname}}</dt>
               <dd class="italic">{{actionItem.description}}</dd>
             </div>
-            <button {{action "removeActionItem" actionItem}}
+            <button {{action "deleteAction" actionItem}}
                 class="px-3 py-1 hover:bg-teal-600 hover:text-white rounded">
               <i class="trash icon pl-1"></i>
             </button>
           </li>
         {{/each}}
       </ul>
-
     {{/if}}
+
   </div>
 </div>
-{{#unless isAdding}}
+
+{{#if canCommit}}
   <div class="modal-dialog__footer">
     {{#wu-button-group}}
       {{wu-button label="Vervangen"
@@ -127,6 +111,6 @@
         commandLocation="below"}} --}}
     {{/wu-button-group}}
   </div>
-{{/unless}}
+{{/if}}
 
 {{yield}}
