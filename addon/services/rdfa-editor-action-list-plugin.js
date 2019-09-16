@@ -99,8 +99,7 @@ const RdfaEditorActionListPlugin = Service.extend({
     return EmberObject.create({
       info: {
         label: this.get('who'),
-        plainValue: hint.text,
-        htmlString: '<b>hello world</b>',
+        typeof: 'http://data.notable.redpencil.io/#ActionList',
         location: hint.location,
         hrId, hintsRegistry, editor
       },
